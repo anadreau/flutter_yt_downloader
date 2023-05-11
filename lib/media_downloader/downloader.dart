@@ -1,26 +1,38 @@
-//TODO: #1 @anadreau create isolate function to download yt videos
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
 import 'package:creator/creator.dart';
 
-final downloadUrlCreator = Creator((p0) => '');
+final downloadUrlCreator =
+    Creator((p0) => 'www.youtube.com/watch?v=8Iwdwn3PUug');
 
-final folderSavePathCreator = Creator((p0) => '');
+final resultCreator = Creator((ref) => []);
 
-final mediaDownloaderCreator = Creator((ref) async {
+final folderSavePathCreator = Creator((ref) => '');
+
+final mediaDownloaderCreator = Creator<void>((ref) async {
   String downloadUrl = ref.read(downloadUrlCreator);
   String fileSavePath = ref.read(folderSavePathCreator);
-  final ytDownloadCmd = 'yt-dlp.exe -P $fileSavePath $downloadUrl';
+  final ytDownloadCmd = '-P $fileSavePath $downloadUrl';
 
-  final result = await Isolate.run(
-      () => Process.start('pwershell.exe', ['-Command', ytDownloadCmd]));
+  final result = await Isolate.run(() => Process.runSync('powershell.exe',
+      ['-Command', 'yt-dlp.exe', '-P', fileSavePath, downloadUrl, '| echo']));
 
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
-
-  result.stdout;
+  if (result.exitCode == 0) {
+    log(result.stdout);
+    String stdoutLog = result.stdout;
+    List<String> stdoutList = stdoutLog.split('\n');
+    ref.set(resultCreator, stdoutList);
+    log('Finished');
+  } else {
+    log('Finished but exit code missed.');
+    log(result.exitCode.toString());
+  }
 });
 
+//TODO: #1 @anadreau create isolate function to download yt videos
 
 ///Alternative
 ///import 'package:youtube_explode_dart/youtube_explode_dart.dart';
