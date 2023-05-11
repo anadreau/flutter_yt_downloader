@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:creator/creator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/folder_selector/folder_selector.dart';
 
 void main() {
   runApp(CreatorGraph(child: const DownloaderApp()));
@@ -33,12 +34,13 @@ class DownloaderApp extends StatelessWidget {
                   },
                   child: const Text('Download'),
                 ),
-                MaterialButton(
-                  onPressed: () {
-                    log('Folder pressed');
-                  },
-                  child: const Icon(Icons.folder),
-                )
+                Watcher((context, ref, child) => MaterialButton(
+                      onPressed: () {
+                        log('Folder pressed');
+                        ref.read(folderSelectorCreator);
+                      },
+                      child: const Icon(Icons.folder),
+                    ))
               ],
             ),
           ],

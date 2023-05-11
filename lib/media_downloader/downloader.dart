@@ -4,9 +4,13 @@ import 'dart:isolate';
 
 import 'package:creator/creator.dart';
 
+final downloadUrlCreator = Creator((p0) => '');
+
+final folderSavePathCreator = Creator((p0) => '');
+
 final mediaDownloaderCreator = Creator((ref) async {
-  String downloadUrl = '';
-  String fileSavePath = '';
+  String downloadUrl = ref.read(downloadUrlCreator);
+  String fileSavePath = ref.read(folderSavePathCreator);
   final ytDownloadCmd = 'yt-dlp.exe -P $fileSavePath $downloadUrl';
 
   final result = await Isolate.run(
