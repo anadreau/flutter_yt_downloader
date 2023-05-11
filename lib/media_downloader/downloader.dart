@@ -19,9 +19,10 @@ final mediaDownloaderCreator = Creator<void>((ref) async {
   final result = await Isolate.run(() => Process.runSync('powershell.exe',
       ['-Command', 'yt-dlp.exe', '-P', fileSavePath, downloadUrl, '| echo']));
 
+  //process.stdout.transform(utf8.decoder).forEach(print);
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
   if (result.exitCode == 0) {
-    log(result.stdout);
+    //log(result.stdout);
     String stdoutLog = result.stdout;
     List<String> stdoutList = stdoutLog.split('\n');
     ref.set(resultCreator, stdoutList);
