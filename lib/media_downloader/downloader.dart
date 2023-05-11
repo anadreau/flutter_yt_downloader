@@ -17,6 +17,8 @@ final mediaDownloaderCreator = Creator((ref) async {
       () => Process.start('pwershell.exe', ['-Command', ytDownloadCmd]));
 
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
+
+  result.stdout;
 });
 
 
