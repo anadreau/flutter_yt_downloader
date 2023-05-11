@@ -9,9 +9,17 @@ void main() {
   runApp(CreatorGraph(child: const DownloaderApp()));
 }
 
-class DownloaderApp extends StatelessWidget {
+class DownloaderApp extends StatefulWidget {
   const DownloaderApp({super.key});
 
+  @override
+  State<DownloaderApp> createState() => _DownloaderAppState();
+}
+
+class _DownloaderAppState extends State<DownloaderApp> {
+  var formKey = GlobalKey<FormFieldState>();
+
+  final youtubeUrlController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +28,25 @@ class DownloaderApp extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        TextFormField(),
+        TextFormField(
+          key: formKey,
+          controller: youtubeUrlController,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please enter a valid YouTube URL.';
+            }
+            try {
+              Uri.parse(value).host;
+            } catch (e) {
+              return 'Invalid YouTube URL';
+            }
+            if (!value.contains('youtube.com/')) {
+              return 'Invalid YouTube URL';
+            }
+
+            return null;
+          },
+        ),
         const SizedBox(
           height: 15,
         ),
@@ -29,8 +55,13 @@ class DownloaderApp extends StatelessWidget {
           children: [
             Watcher((context, ref, child) => MaterialButton(
                   onPressed: () {
-                    log('Download pressed');
-                    ref.read(mediaDownloaderCreator);
+                    if (formKey.currentState!.validate()) {
+                      log('form validated');
+                      ref.set(downloadUrlCreator,
+                          youtubeUrlController.text.trimRight());
+                      log('Download pressed');
+                      ref.read(mediaDownloaderCreator);
+                    }
                   },
                   child: const Text('Download'),
                 )),
