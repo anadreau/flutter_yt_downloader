@@ -32,7 +32,6 @@ final mediaDownloaderCreator = Creator<void>((ref) async {
   }
 });
 
-//TODO: #1 @anadreau create isolate function to download yt videos
 
 ///Alternative
 ///import 'package:youtube_explode_dart/youtube_explode_dart.dart';
