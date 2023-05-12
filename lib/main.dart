@@ -74,6 +74,7 @@ class _DownloaderAppState extends State<DownloaderApp> {
                 ))
           ],
         ),
+        //TODO: #4 add indicator for status of download. @anadreau
         Expanded(
           child: Watcher((context, ref, child) {
             return ListView(
