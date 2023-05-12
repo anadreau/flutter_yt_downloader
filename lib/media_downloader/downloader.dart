@@ -17,8 +17,8 @@ final mediaDownloaderCreator = Creator<void>((ref) async {
   final ytDownloadCmd = '-P $fileSavePath $downloadUrl';
   ref.set(conversionStatusCreator, Status.inProgress);
 
-  final result = await Isolate.run(() => Process.runSync('powershell.exe',
-      ['-Command', 'yt-dlp.exe', '-P', fileSavePath, downloadUrl, '| echo']));
+  final result = await Isolate.run(() => Process.runSync(
+      'powershell.exe', ['-Command', 'yt-dlp.exe', ytDownloadCmd, '| echo']));
 
   //process.stdout.transform(utf8.decoder).forEach(print);
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
