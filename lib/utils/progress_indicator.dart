@@ -12,19 +12,21 @@ final conversionStatusCreator = Creator.value(Status.notStarted);
 final statusCreator = Creator((ref) {
   var status = ref.watch(conversionStatusCreator);
   String statusString;
+
   switch (status) {
     case Status.notStarted:
-      statusString = 'notStarted';
+      statusString = 'Download has not been started yet';
       break;
     case Status.inProgress:
-      statusString = 'inProgress';
+      statusString = 'Download in Progress';
       break;
     case Status.done:
-      statusString = 'done';
+      statusString = 'Download has been Completed';
       break;
+
     case Status.error:
-      statusString = 'error';
-      break;
+      statusString = 'Error Downloading Video';
   }
+
   return statusString;
 });
