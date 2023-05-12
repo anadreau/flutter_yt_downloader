@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:creator/creator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/folder_selector/folder_selector.dart';
 import 'package:flutter_downloader/media_downloader/downloader.dart';
+import 'package:flutter_downloader/utils/progress_indicator.dart';
 
 void main() {
   runApp(CreatorGraph(child: const DownloaderApp()));
@@ -56,10 +55,9 @@ class _DownloaderAppState extends State<DownloaderApp> {
             Watcher((context, ref, child) => MaterialButton(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
-                      log('form validated');
                       ref.set(downloadUrlCreator,
                           youtubeUrlController.text.trimRight());
-                      log('Download pressed');
+
                       ref.read(mediaDownloaderCreator);
                     }
                   },
@@ -67,7 +65,6 @@ class _DownloaderAppState extends State<DownloaderApp> {
                 )),
             Watcher((context, ref, child) => MaterialButton(
                   onPressed: () {
-                    log('Folder pressed');
                     ref.read(folderSelectorCreator);
                   },
                   child: const Icon(Icons.folder),
@@ -75,6 +72,14 @@ class _DownloaderAppState extends State<DownloaderApp> {
           ],
         ),
         //TODO: #4 add indicator for status of download. @anadreau
+        Watcher((context, ref, child) => Container(
+            decoration: const BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(ref.watch(statusCreator)),
+            ))),
         Expanded(
           child: Watcher((context, ref, child) {
             return ListView(
@@ -89,5 +94,3 @@ class _DownloaderAppState extends State<DownloaderApp> {
     )));
   }
 }
-
-//TODO: #2 @anadreau Add text form field to input yt url to download
