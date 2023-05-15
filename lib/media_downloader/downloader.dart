@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:creator/creator.dart';
+import 'package:flutter_downloader/utils/progress_indicator.dart';
 
-final downloadUrlCreator =
-    Creator((p0) => 'www.youtube.com/watch?v=8Iwdwn3PUug');
+final downloadUrlCreator = Creator((p0) => '');
 
 final resultCreator = Creator((ref) => []);
 
@@ -15,20 +15,25 @@ final mediaDownloaderCreator = Creator<void>((ref) async {
   String downloadUrl = ref.read(downloadUrlCreator);
   String fileSavePath = ref.read(folderSavePathCreator);
   final ytDownloadCmd = '-P $fileSavePath $downloadUrl';
+  ref.set(conversionStatusCreator, Status.inProgress);
 
-  final result = await Isolate.run(() => Process.runSync('powershell.exe',
-      ['-Command', 'yt-dlp.exe', '-P', fileSavePath, downloadUrl, '| echo']));
+  final result = await Isolate.run(() => Process.runSync(
+      'powershell.exe', ['-Command', 'yt-dlp.exe', ytDownloadCmd, '| echo']));
 
   //process.stdout.transform(utf8.decoder).forEach(print);
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
   if (result.exitCode == 0) {
-    //log(result.stdout);
     String stdoutLog = result.stdout;
     List<String> stdoutList = stdoutLog.split('\n');
     ref.set(resultCreator, stdoutList);
-    log('Finished');
+    if (result.stderr.toString().isNotEmpty) {
+      ref.set(conversionStatusCreator, Status.error);
+    }
+    if (result.stdout.toString().isNotEmpty) {
+      ref.set(conversionStatusCreator, Status.done);
+    }
   } else {
-    log('Finished but exit code missed.');
+    ref.set(conversionStatusCreator, Status.error);
     log(result.exitCode.toString());
   }
 });
