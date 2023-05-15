@@ -22,97 +22,98 @@ class _DownloaderAppState extends State<DownloaderApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        restorationScopeId: 'neededForWindowsRelease',
         home: Scaffold(
             body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            fit: FlexFit.loose,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(100, 15, 100, 15),
-              child: TextFormField(
-                key: formKey,
-                controller: youtubeUrlController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter a valid YouTube URL.';
-                  }
-                  try {
-                    Uri.parse(value).host;
-                  } catch (e) {
-                    return 'Invalid YouTube URL';
-                  }
-                  if (!value.contains('youtube.com/')) {
-                    return 'Invalid YouTube URL';
-                  }
-
-                  return null;
-                },
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Watcher((context, ref, child) => MaterialButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        ref.set(downloadUrlCreator,
-                            youtubeUrlController.text.trimRight());
-
-                        ref.read(mediaDownloaderCreator);
+              Flexible(
+                fit: FlexFit.loose,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(100, 15, 100, 15),
+                  child: TextFormField(
+                    key: formKey,
+                    controller: youtubeUrlController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter a valid YouTube URL.';
                       }
+                      try {
+                        Uri.parse(value).host;
+                      } catch (e) {
+                        return 'Invalid YouTube URL';
+                      }
+                      if (!value.contains('youtube.com/')) {
+                        return 'Invalid YouTube URL';
+                      }
+
+                      return null;
                     },
-                    child: const Text('Download'),
-                  )),
-              Watcher((context, ref, child) => MaterialButton(
-                    onPressed: () {
-                      ref.read(folderSelectorCreator);
-                    },
-                    child: const Icon(Icons.folder),
-                  ))
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Watcher((context, ref, child) => MaterialButton(
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            ref.set(downloadUrlCreator,
+                                youtubeUrlController.text.trimRight());
+
+                            ref.read(mediaDownloaderCreator);
+                          }
+                        },
+                        child: const Text('Download'),
+                      )),
+                  Watcher((context, ref, child) => MaterialButton(
+                        onPressed: () {
+                          ref.read(folderSelectorCreator);
+                        },
+                        child: const Icon(Icons.folder),
+                      ))
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Watcher((context, ref, child) => Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(ref.watch(statusCreator)),
+                  ))),
+              const SizedBox(height: 15),
+              const Center(child: Text('output')),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(75, 0, 75, 15),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Watcher((context, ref, child) {
+                  return ListView(
+                    children: [
+                      for (var item in ref.watch(resultCreator))
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(75, 0, 75, 15),
+                          child: Text(item),
+                        ),
+                    ],
+                  );
+                }),
+              ),
             ],
           ),
-          const SizedBox(
-            height: 15,
-          ),
-          Watcher((context, ref, child) => Container(
-              decoration: const BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(ref.watch(statusCreator)),
-              ))),
-          const SizedBox(height: 15),
-          const Center(child: Text('output')),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(75, 0, 75, 15),
-            child: Divider(
-              color: Colors.grey,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Watcher((context, ref, child) {
-              return ListView(
-                children: [
-                  for (var item in ref.watch(resultCreator))
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(75, 0, 75, 15),
-                      child: Text(item),
-                    ),
-                ],
-              );
-            }),
-          ),
-        ],
-      ),
-    )));
+        )));
   }
 }
