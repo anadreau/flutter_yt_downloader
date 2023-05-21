@@ -4,6 +4,12 @@ import 'package:flutter_downloader/folder_selector/folder_selector.dart';
 import 'package:flutter_downloader/media_downloader/downloader.dart';
 import 'package:flutter_downloader/utils/progress_indicator.dart';
 
+//TODO: #6 update progress bar to be smaller, in line with buttons. @anadreau
+
+//TODO: #7 implement function to check if FFMPEG is downloaded and download and install if needed. @anadreau
+
+//TODO: #8 add functionality to change output file type. @anadreau
+
 void main() {
   runApp(CreatorGraph(child: const DownloaderApp()));
 }
