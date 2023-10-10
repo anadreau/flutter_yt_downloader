@@ -5,6 +5,8 @@ import 'package:flutter_downloader/media_downloader/downloader.dart';
 import 'package:flutter_downloader/utils/progress_indicator.dart';
 
 void main() {
+  //TO-DO: #9 Change Creator to Riverpod.
+  //TO-DO: #10 Implement Very_Good analysis.
   runApp(CreatorGraph(child: const DownloaderApp()));
 }
 
