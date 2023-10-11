@@ -1,21 +1,22 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
-
-import 'package:creator/creator.dart';
 import 'package:flutter_downloader/utils/progress_indicator.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final downloadUrlCreator = Creator((p0) => '');
+final downloadUrlProvider = StateProvider((ref) => '');
 
-final resultCreator = Creator((ref) => []);
+final resultProvider = StateProvider((ref) => []);
 
-final folderSavePathCreator = Creator((ref) => '');
+final folderSavePathProvider = StateProvider<String?>((ref) => '');
 
-final mediaDownloaderCreator = Creator<void>((ref) async {
-  String downloadUrl = ref.read(downloadUrlCreator);
-  String fileSavePath = ref.read(folderSavePathCreator);
+mediaDownloader(WidgetRef ref) async {
+  String downloadUrl = ref.read(downloadUrlProvider);
+  String? fileSavePath = ref.read(folderSavePathProvider);
   final ytDownloadCmd = '-P $fileSavePath $downloadUrl';
-  ref.set(conversionStatusCreator, Status.inProgress);
+  ref
+      .read(conversionStatusProvider.notifier)
+      .update((state) => Status.inProgress);
 
   final result = await Isolate.run(() => Process.runSync(
       'powershell.exe', ['-Command', 'yt-dlp.exe', ytDownloadCmd, '| echo']));
@@ -25,18 +26,22 @@ final mediaDownloaderCreator = Creator<void>((ref) async {
   if (result.exitCode == 0) {
     String stdoutLog = result.stdout;
     List<String> stdoutList = stdoutLog.split('\n');
-    ref.set(resultCreator, stdoutList);
+    ref.read(resultProvider.notifier).update((state) => stdoutList);
     if (result.stderr.toString().isNotEmpty) {
-      ref.set(conversionStatusCreator, Status.error);
+      ref
+          .read(conversionStatusProvider.notifier)
+          .update((state) => Status.error);
     }
     if (result.stdout.toString().isNotEmpty) {
-      ref.set(conversionStatusCreator, Status.done);
+      ref
+          .read(conversionStatusProvider.notifier)
+          .update((state) => Status.done);
     }
   } else {
-    ref.set(conversionStatusCreator, Status.error);
-    log(result.exitCode.toString());
+    ref.read(conversionStatusProvider.notifier).update((state) => Status.error);
+    log('Downloader encountered an error: ${result.exitCode.toString()}');
   }
-});
+}
 
 
 ///Alternative
