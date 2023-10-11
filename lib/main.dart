@@ -1,13 +1,15 @@
-import 'package:creator/creator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/folder_selector/folder_selector.dart';
 import 'package:flutter_downloader/media_downloader/downloader.dart';
 import 'package:flutter_downloader/utils/progress_indicator.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   //TO-DO: #9 Change Creator to Riverpod.
   //TO-DO: #10 Implement Very_Good analysis.
-  runApp(CreatorGraph(child: const DownloaderApp()));
+  //TO-DO: #11 Add ability to check for and
+  //install yt-dlp.exe if it is missing. @anadreau
+  runApp(const ProviderScope(child: DownloaderApp()));
 }
 
 class DownloaderApp extends StatefulWidget {
@@ -62,36 +64,16 @@ class _DownloaderAppState extends State<DownloaderApp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Watcher((context, ref, child) => MaterialButton(
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            ref.set(downloadUrlCreator,
-                                youtubeUrlController.text.trimRight());
-
-                            ref.read(mediaDownloaderCreator);
-                          }
-                        },
-                        child: const Text('Download'),
-                      )),
-                  Watcher((context, ref, child) => MaterialButton(
-                        onPressed: () {
-                          ref.read(folderSelectorCreator);
-                        },
-                        child: const Icon(Icons.folder),
-                      ))
+                  DownloadButton(
+                      formKey: formKey,
+                      youtubeUrlController: youtubeUrlController),
+                  const SelectFolderButton()
                 ],
               ),
               const SizedBox(
                 height: 15,
               ),
-              Watcher((context, ref, child) => Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(ref.watch(statusCreator)),
-                  ))),
+              const StatusText(),
               const SizedBox(height: 15),
               const Center(child: Text('output')),
               const Padding(
@@ -100,22 +82,92 @@ class _DownloaderAppState extends State<DownloaderApp> {
                   color: Colors.grey,
                 ),
               ),
-              Expanded(
+              const Expanded(
                 flex: 1,
-                child: Watcher((context, ref, child) {
-                  return ListView(
-                    children: [
-                      for (var item in ref.watch(resultCreator))
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(75, 0, 75, 15),
-                          child: Text(item),
-                        ),
-                    ],
-                  );
-                }),
+                child: ItemListView(),
               ),
             ],
           ),
         )));
+  }
+}
+
+class SelectFolderButton extends ConsumerWidget {
+  const SelectFolderButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialButton(
+      onPressed: () {
+        folderSelector(ref);
+      },
+      child: const Icon(Icons.folder),
+    );
+  }
+}
+
+class StatusText extends ConsumerWidget {
+  const StatusText({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+        decoration: const BoxDecoration(
+            color: Colors.green,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(ref.watch(statusProvider)),
+        ));
+  }
+}
+
+class ItemListView extends ConsumerWidget {
+  const ItemListView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      children: [
+        for (var item in ref.watch(resultProvider))
+          Padding(
+            padding: const EdgeInsets.fromLTRB(75, 0, 75, 15),
+            child: Text(item),
+          ),
+      ],
+    );
+  }
+}
+
+class DownloadButton extends ConsumerWidget {
+  const DownloadButton({
+    super.key,
+    required this.formKey,
+    required this.youtubeUrlController,
+  });
+
+  final GlobalKey<FormFieldState> formKey;
+  final TextEditingController youtubeUrlController;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialButton(
+      onPressed: () {
+        if (formKey.currentState!.validate()) {
+          ref
+              .read(downloadUrlProvider.notifier)
+              .update((state) => youtubeUrlController.text.trimRight());
+
+          mediaDownloader(ref);
+        }
+      },
+      child: const Text('Download'),
+    );
   }
 }
