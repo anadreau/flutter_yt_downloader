@@ -5,13 +5,14 @@ import 'package:flutter_downloader/utils/progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  //TO-DO: #10 Implement Very_Good analysis.
   //TO-DO: #11 Add ability to check for and
   //install yt-dlp.exe if it is missing. @anadreau
   runApp(const ProviderScope(child: DownloaderApp()));
 }
 
+///Root of application.
 class DownloaderApp extends StatefulWidget {
+  ///Implementation of [DownloaderApp]
   const DownloaderApp({super.key});
 
   @override
@@ -19,21 +20,21 @@ class DownloaderApp extends StatefulWidget {
 }
 
 class _DownloaderAppState extends State<DownloaderApp> {
-  var formKey = GlobalKey<FormFieldState>();
+  GlobalKey<FormFieldState<dynamic>> formKey =
+      GlobalKey<FormFieldState<dynamic>>();
 
   final youtubeUrlController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        restorationScopeId: 'neededForWindowsRelease',
-        home: Scaffold(
-            body: Center(
+      restorationScopeId: 'neededForWindowsRelease',
+      home: Scaffold(
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(
-                fit: FlexFit.loose,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(100, 15, 100, 15),
                   child: TextFormField(
@@ -64,9 +65,10 @@ class _DownloaderAppState extends State<DownloaderApp> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   DownloadButton(
-                      formKey: formKey,
-                      youtubeUrlController: youtubeUrlController),
-                  const SelectFolderButton()
+                    formKey: formKey,
+                    youtubeUrlController: youtubeUrlController,
+                  ),
+                  const SelectFolderButton(),
                 ],
               ),
               const SizedBox(
@@ -82,16 +84,20 @@ class _DownloaderAppState extends State<DownloaderApp> {
                 ),
               ),
               const Expanded(
-                flex: 1,
                 child: ItemListView(),
               ),
             ],
           ),
-        )));
+        ),
+      ),
+    );
   }
 }
 
+///[ConsumerWidget] that gives ref to button that selects folder
+///that file will be downloaded to.
 class SelectFolderButton extends ConsumerWidget {
+  ///Implementation of[SelectFolderButton]
   const SelectFolderButton({
     super.key,
   });
@@ -107,7 +113,9 @@ class SelectFolderButton extends ConsumerWidget {
   }
 }
 
+///[ConsumerWidget] that gives [Text] widget access to [statusProvider]
 class StatusText extends ConsumerWidget {
+  ///Implementation of [StatusText]
   const StatusText({
     super.key,
   });
@@ -115,17 +123,21 @@ class StatusText extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-        decoration: const BoxDecoration(
-            color: Colors.green,
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(ref.watch(statusProvider)),
-        ));
+      decoration: const BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Text(ref.watch(statusProvider)),
+      ),
+    );
   }
 }
 
+///[ConsumerWidget] that gives access to [resultProvider]
 class ItemListView extends ConsumerWidget {
+  ///Implementation of [ItemListView]
   const ItemListView({
     super.key,
   });
@@ -134,7 +146,7 @@ class ItemListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       children: [
-        for (var item in ref.watch(resultProvider))
+        for (final item in ref.watch(resultProvider))
           Padding(
             padding: const EdgeInsets.fromLTRB(75, 0, 75, 15),
             child: Text(item),
@@ -144,14 +156,20 @@ class ItemListView extends ConsumerWidget {
   }
 }
 
+///[ConsumerWidget] that gives access to [downloadUrlProvider] and
+///downloads file on button press
 class DownloadButton extends ConsumerWidget {
+  ///Implementation of [DownloadButton]
   const DownloadButton({
-    super.key,
     required this.formKey,
     required this.youtubeUrlController,
+    super.key,
   });
 
-  final GlobalKey<FormFieldState> formKey;
+  ///[GlobalKey] used in input validation.
+  final GlobalKey<FormFieldState<dynamic>> formKey;
+
+  ///[TextEditingController] used to track url input by user.
   final TextEditingController youtubeUrlController;
 
   @override
