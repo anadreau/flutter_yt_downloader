@@ -144,7 +144,10 @@ class OutputView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Text(ref.watch(resultProvider));
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+      child: SingleChildScrollView(child: Text(ref.watch(resultProvider))),
+    );
   }
 }
 
