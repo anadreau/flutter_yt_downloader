@@ -1,7 +1,7 @@
 name: flutter_downloader
-description: A new Flutter project.
+description: GUI to download youtube video from url using yt-dlp.exe behind the scenes.
 publish_to: 'none'
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -17,10 +17,11 @@ dependencies:
   riverpod: ^2.4.3
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  flutter_launcher_icons: ^0.13.1
+  very_good_analysis: ^5.1.0
 
 flutter:
   uses-material-design: true
