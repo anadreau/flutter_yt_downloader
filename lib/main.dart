@@ -1,4 +1,3 @@
-import 'package:creator/creator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/folder_selector/folder_selector.dart';
 import 'package:flutter_downloader/media_downloader/downloader.dart';
