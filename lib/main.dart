@@ -5,7 +5,6 @@ import 'package:flutter_downloader/utils/progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  //TO-DO: #10 Implement Very_Good analysis.
   //TO-DO: #11 Add ability to check for and
   //install yt-dlp.exe if it is missing. @anadreau
   runApp(const ProviderScope(child: DownloaderApp()));
