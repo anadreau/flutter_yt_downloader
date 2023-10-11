@@ -84,7 +84,7 @@ class _DownloaderAppState extends State<DownloaderApp> {
                 ),
               ),
               const Expanded(
-                child: ItemListView(),
+                child: OutputView(),
               ),
             ],
           ),
@@ -136,23 +136,15 @@ class StatusText extends ConsumerWidget {
 }
 
 ///[ConsumerWidget] that gives access to [resultProvider]
-class ItemListView extends ConsumerWidget {
-  ///Implementation of [ItemListView]
-  const ItemListView({
+class OutputView extends ConsumerWidget {
+  ///Implementation of [OutputView]
+  const OutputView({
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListView(
-      children: [
-        for (final item in ref.watch(resultProvider))
-          Padding(
-            padding: const EdgeInsets.fromLTRB(75, 0, 75, 15),
-            child: Text(item),
-          ),
-      ],
-    );
+    return Text(ref.watch(resultProvider));
   }
 }
 

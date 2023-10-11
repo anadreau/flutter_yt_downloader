@@ -9,7 +9,7 @@ final downloadUrlProvider = StateProvider((ref) => '');
 
 ///[StateProvider] holds [List<String>] of command line output
 ///of yt-dlp.exe cmd
-final resultProvider = StateProvider<List<String>>((ref) => []);
+final resultProvider = StateProvider<String>((ref) => '');
 
 ///[StateProvider] holds [String?] of folder path that video
 ///will be downloaded to.
@@ -18,9 +18,10 @@ final folderSavePathProvider = StateProvider<String?>((ref) => '');
 ///Function to run yt-dlp.exe cmd based on [downloadUrlProvider]
 ///and [folderSavePathProvider]
 Future<void> mediaDownloader(WidgetRef ref) async {
-  final downloadUrl = ref.read(downloadUrlProvider);
-  final fileSavePath = ref.read(folderSavePathProvider);
-  final ytDownloadCmd = '-P $fileSavePath $downloadUrl';
+  final downloadUrl = ref.read(downloadUrlProvider.notifier).state;
+  final fileSavePath = ref.read(folderSavePathProvider.notifier).state;
+  final ytDownloadCmd = '$downloadUrl -o $fileSavePath\\video';
+  log('cmd - $ytDownloadCmd');
   ref
       .read(conversionStatusProvider.notifier)
       .update((state) => Status.inProgress);
@@ -28,28 +29,25 @@ Future<void> mediaDownloader(WidgetRef ref) async {
   final result = await Isolate.run(
     () => Process.runSync(
       'powershell.exe',
-      ['-Command', 'yt-dlp.exe', ytDownloadCmd, '| echo'],
+      ['-Command', 'yt-dlp', ytDownloadCmd],
     ),
   );
-
+  log('result: ${result.stderr}');
+  log('Exitcode: ${result.exitCode}');
   //process.stdout.transform(utf8.decoder).forEach(print);
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
-  if (result.exitCode == 0) {
-    final stdoutLog = result.stdout.toString();
-    final stdoutList = stdoutLog.split('\n');
-    ref.read(resultProvider.notifier).update((state) => stdoutList);
-    if (result.stderr.toString().isNotEmpty) {
-      ref
-          .read(conversionStatusProvider.notifier)
-          .update((state) => Status.error);
-    }
-    if (result.stdout.toString().isNotEmpty) {
-      ref
-          .read(conversionStatusProvider.notifier)
-          .update((state) => Status.done);
-    }
-  } else {
+  if (result.stderr.toString().isNotEmpty) {
+    final error = result.stderr.toString();
+    log('error is $error');
     ref.read(conversionStatusProvider.notifier).update((state) => Status.error);
-    log('Downloader encountered an error: ${result.exitCode}');
+
+    ref.read(resultProvider.notifier).update((state) => error);
+  }
+  if (result.stdout.toString().isNotEmpty) {
+    final status = result.stdout.toString();
+    log('status: $status');
+    ref.read(conversionStatusProvider.notifier).update((state) => Status.done);
+
+    ref.read(resultProvider.notifier).update((state) => status);
   }
 }
