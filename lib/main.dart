@@ -29,6 +29,7 @@ class _DownloaderAppState extends State<DownloaderApp> {
     return MaterialApp(
       restorationScopeId: 'neededForWindowsRelease',
       home: Scaffold(
+        backgroundColor: Colors.tealAccent,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
