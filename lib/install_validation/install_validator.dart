@@ -1,4 +1,5 @@
-
+//TO-DO: #11 Add ability to check for and
+//install yt-dlp.exe if it is missing. @anadreau
 
 /*
 Windows terminal cmd to find path
