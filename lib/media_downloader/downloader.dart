@@ -27,13 +27,20 @@ Future<void> mediaDownloader(WidgetRef ref) async {
       .update((state) => Status.inProgress);
 
   final result = await Isolate.run(
-    () => Process.runSync(
+    () => Process.start(
       'powershell.exe',
       ['-Command', 'yt-dlp', ytDownloadCmd],
     ),
   );
   log('result: ${result.stderr}');
-  log('Exitcode: ${result.exitCode}');
+  log('Exitcode: ${await result.exitCode}');
+  //TO-DO: #14 Changing Process.runsync to Process.start @anadreau
+
+  /*
+  Changing Process.runsync to Process.start
+  Need to change logic below so the status.error doesn't change each time a new
+  line is sent through the pipe. 
+  */
   //process.stdout.transform(utf8.decoder).forEach(print);
   ///cmd yt-dlp.exe -P C:\Users\anadr\Videos\download *url*
   if (result.stderr.toString().isNotEmpty) {
